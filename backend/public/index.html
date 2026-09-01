@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerenciador de Tarefas - Básico</title>
+</head>
+<body>
+
+  <h1>Gerenciador de Tarefas (Sem Estilo)</h1>
+
+  <!-- Formulário de Criação -->
+  <fieldset>
+    <legend>Cadastrar Nova Tarefa</legend>
+    <form id="formCadastro">
+      <label for="titulo">Título:</label>
+      <input type="text" id="titulo" placeholder="Mínimo 5 caracteres" required>
+      
+      <label for="prioridade">Prioridade (1 a 3):</label>
+      <input type="number" id="prioridade" min="1" max="3" value="2" required>
+      
+      <button type="submit">Cadastrar</button>
+    </form>
+  </fieldset>
+
+  <br>
+
+  <!-- Mensagens de Erro/Sucesso -->
+  <div id="mensagem" style="font-weight: bold;"></div>
+
+  <br>
+
+  <!-- Tabela de Listagem -->
+  <h2>Lista de Tarefas</h2>
+  <table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Título</th>
+        <th>Prioridade</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaTarefas">
+      <!-- Inserido dinamicamente via JS -->
+    </tbody>
+  </table>
+
+  <script>
+    const formCadastro = document.getElementById('formCadastro');
+    const inputTitulo = document.getElementById('titulo');
+    const inputPrioridade = document.getElementById('prioridade');
+    const tabelaTarefas = document.getElementById('tabelaTarefas');
+    const divMensagem = document.getElementById('mensagem');
+
+    function exibirMensagem(texto, cor = 'black') {
+      divMensagem.style.color = cor;
+      divMensagem.textContent = texto;
+      setTimeout(() => { divMensagem.textContent = ''; }, 4000);
+    }
+
+    // Carregar e listar tarefas
+    async function carregarTarefas() {
+      try {
+        const res = await fetch('/api/tarefas');
+        const resultado = await res.json();
+        
+        tabelaTarefas.innerHTML = '';
+
+        if (resultado.dados.length === 0) {
+          tabelaTarefas.innerHTML = '<tr><td colspan="5">Nenhuma tarefa encontrada.</td></tr>';
+          return;
+        }
+
+        resultado.dados.forEach(t => {
+          const tr = document.createElement('tr');
+          const statusFormatado = t.status ? 'Em execução' : 'Concluída';
+
+          tr.innerHTML = `
+            <td>${t.codigo}</td>
+            <td>${t.titulo}</td>
+            <td>${t.prioridade}</td>
+            <td>${statusFormatado}</td>
+            <td>
+              ${t.status ? `
+                <button onclick="concluirTarefa(${t.codigo})">Concluir</button>
+                <button onclick="alterarPrioridadePrompt(${t.codigo}, ${t.prioridade})">Alterar Prioridade</button>
+              ` : 'Finalizada'}
+            </td>
+          `;
+          tabelaTarefas.appendChild(tr);
+        });
+      } catch (err) {
+        exibirMensagem('Erro ao carregar lista de tarefas.', 'red');
+      }
+    }
+
+    // Envio do formulário
+    formCadastro.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        const res = await fetch('/api/tarefas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            titulo: inputTitulo.value,
+            prioridade: inputPrioridade.value
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.sucesso) {
+          exibirMensagem(data.mensagem, 'red');
+          return;
+        }
+
+        exibirMensagem('Tarefa cadastrada com sucesso!', 'green');
+        inputTitulo.value = '';
+        inputPrioridade.value = '2';
+        carregarTarefas();
+      } catch (err) {
+        exibirMensagem('Erro de comunicação com o servidor.', 'red');
+      }
+    });
+
+    // Concluir tarefa
+    async function concluirTarefa(codigo) {
+      try {
+        const res = await fetch(`/api/tarefas/${codigo}/concluir`, { method: 'PATCH' });
+        const data = await res.json();
+
+        if (!data.sucesso) {
+          exibirMensagem(data.mensagem, 'red');
+          return;
+        }
+
+        exibirMensagem(`Tarefa #${codigo} concluída!`, 'green');
+        carregarTarefas();
+      } catch (err) {
+        exibirMensagem('Erro ao concluir tarefa.', 'red');
+      }
+    }
+
+    // Alterar prioridade
+    async function alterarPrioridadePrompt(codigo, prioridadeAtual) {
+      const novaPrio = prompt('Informe a nova prioridade (1 a 3):', prioridadeAtual);
+      if (!novaPrio) return;
+
+      try {
+        const res = await fetch(`/api/tarefas/${codigo}/prioridade`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prioridade: novaPrio })
+        });
+
+        const data = await res.json();
+
+        if (!data.sucesso) {
+          exibirMensagem(data.mensagem, 'red');
+          return;
+        }
+
+        exibirMensagem(`Prioridade da tarefa #${codigo} atualizada!`, 'green');
+        carregarTarefas();
+      } catch (err) {
+        exibirMensagem('Erro ao alterar prioridade.', 'red');
+      }
+    }
+
+    // Carga inicial ao abrir
+    carregarTarefas();
+  </script>
+</body>
+</html>
