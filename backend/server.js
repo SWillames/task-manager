@@ -1,13 +1,14 @@
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
 const PORT = 3000;
 
+// Habilita CORS para permitir que o frontend acesse a API de qualquer origem/porta
+app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// ==========================================
-// 1. REGRAS DE NEGÓCIO E DADOS EM MEMÓRIA
-// ==========================================
+// --- Estado e Regras de Negócio ---
 const tarefas = [];
 let proximoCodigo = 0;
 
@@ -17,7 +18,7 @@ function validarDadosDaTarefa(titulo, prioridade) {
   }
   const prioNum = Number(prioridade);
   if (isNaN(prioNum) || prioNum < 1 || prioNum > 3) {
-    throw new Error("A prioridade deve ser um número entre 1 e 3.");
+    throw new Error("A prioridade deve ser um número entre 1 (Alta) e 3 (Baixa).");
   }
 }
 
@@ -36,7 +37,7 @@ function cadastrarTarefa(titulo, prioridade) {
     codigo: proximoCodigo,
     titulo: titulo.trim(),
     prioridade: Number(prioridade),
-    status: true
+    status: true // true = Em execução / Ativa
   };
   tarefas.push(novaTarefa);
   return novaTarefa;
@@ -62,16 +63,24 @@ function alterarPrioridade(codigo, novaPrioridade) {
   return tarefa;
 }
 
-// ==========================================
-// 2. ENDPOINTS DA API REST
-// ==========================================
+function excluirTarefa(codigo) {
+  const index = tarefas.findIndex((t) => t.codigo === codigo);
+  
+  if (index === -1) {
+    throw new Error(`Tarefa #${codigo} não encontrada.`);
+  }
 
-// Listar tarefas
+  // Remove o item do array na memória
+  const [tarefaExcluida] = tarefas.splice(index, 1);
+  return tarefaExcluida;
+}
+
+// --- Endpoints REST ---
+
 app.get('/api/tarefas', (req, res) => {
   res.json({ sucesso: true, dados: listarTarefas() });
 });
 
-// Cadastrar tarefa
 app.post('/api/tarefas', (req, res) => {
   try {
     const { titulo, prioridade } = req.body;
@@ -82,7 +91,6 @@ app.post('/api/tarefas', (req, res) => {
   }
 });
 
-// Concluir tarefa
 app.patch('/api/tarefas/:codigo/concluir', (req, res) => {
   try {
     const codigo = Number(req.params.codigo);
@@ -93,7 +101,6 @@ app.patch('/api/tarefas/:codigo/concluir', (req, res) => {
   }
 });
 
-// Alterar prioridade
 app.patch('/api/tarefas/:codigo/prioridade', (req, res) => {
   try {
     const codigo = Number(req.params.codigo);
@@ -105,6 +112,16 @@ app.patch('/api/tarefas/:codigo/prioridade', (req, res) => {
   }
 });
 
+app.delete('/api/tarefas/:codigo', (req, res) => {
+  try {
+    const codigo = Number(req.params.codigo);
+    const removida = excluirTarefa(codigo);
+    res.json({ sucesso: true, mensagem: `Tarefa #${codigo} removida com sucesso!`, dados: removida });
+  } catch (erro) {
+    res.status(404).json({ sucesso: false, mensagem: erro.message });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em: http://localhost:${PORT}`);
+  console.log(`Backend API rodando em http://localhost:${PORT}`);
 });

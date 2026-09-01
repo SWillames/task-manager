@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Tarefas UI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <header class="app-header">
+      <div class="brand">
+        <span class="logo-dot"></span>
+        <h1>Task Manager</h1>
+      </div>
+      <p>Organize suas tarefas com foco e prioridade</p>
+    </header>
+
+    <section class="card form-card">
+      <form id="taskForm">
+        <div class="form-inputs">
+          <input 
+            type="text" 
+            id="taskTitle" 
+            placeholder="O que precisa ser feito? (mín. 5 letras)" 
+            autocomplete="off" 
+            required
+          >
+          <div class="select-wrapper">
+            <select id="taskPriority">
+              <option value="1">Alta Prioridade</option>
+              <option value="2" selected>Média Prioridade</option>
+              <option value="3">Baixa Prioridade</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Criar Tarefa</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="toastMessage" class="toast"></div>
+
+    <main class="tasks-section">
+      <div class="tasks-header">
+        <h2>Painel de Tarefas</h2>
+        <span class="tasks-badge" id="tasksCount">0 itens</span>
+      </div>
+
+      <ul class="tasks-list" id="tasksList">
+        <!-- Renderizado dinamicamente via JS -->
+      </ul>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
