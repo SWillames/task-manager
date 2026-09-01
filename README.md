@@ -1,42 +1,47 @@
-# 🌐 Gerenciador de Tarefas — Etapa 2 (Monolito Integrado)
+# ⚡ Gerenciador de Tarefas — Etapa 3 (Arquitetura Desacoplada + UI/UX)
 
-Segunda etapa do projeto, evoluindo a aplicação de terminal para uma arquitetura cliente-servidor integrada com Node.js, Express e HTML nativo.
+Terceira etapa do projeto, implementando uma arquitetura desacoplada completa: uma API REST independente no Backend e uma SPA (Single Page Application) com foco em UI/UX no Frontend.
 
 ---
 
 ## 🎯 Objetivos de Aprendizagem
-- Criação de servidores HTTP com **Express**.
-- Implementação de endpoints REST (`GET`, `POST`, `PATCH`).
-- Servir arquivos estáticos da pasta `public/` via `express.static`.
-- Consumo assíncrono de APIs no frontend utilizando `fetch()` (Promises / `async/await`).
-- Manipulação dinâmica do DOM e formulários HTML nativos (sem estilos/UI complexa).
+- Separação estrita de responsabilidades entre Backend e Frontend.
+- Gerenciamento de **CORS (Cross-Origin Resource Sharing)**.
+- Design de interface moderna: Dark mode, tipografia Inter, feedback visual com toasts reativos e estados de tarefas.
+- Organização modular de código frontend (`index.html`, `style.css` e `app.js`).
 
 ---
 
-## 📡 Endpoints da API
+## 📁 Estrutura do Projeto
 
-| Método | Rota | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/api/tarefas` | Retorna todas as tarefas |
-| `POST` | `/api/tarefas` | Cria uma nova tarefa |
-| `PATCH` | `/api/tarefas/:codigo/concluir` | Marca uma tarefa como concluída |
-| `PATCH` | `/api/tarefas/:codigo/prioridade` | Atualiza o nível de prioridade |
+```text
+task-manager/
+├── backend/          # API REST Express (porta 3000)
+│   ├── server.js
+│   └── package.json
+└── frontend/         # Cliente estático desacoplado (HTML + CSS + JS)
+    ├── index.html
+    ├── style.css
+    └── app.js
+```
 
 ---
 
 ## 🚀 Como Executar
 
-1. Instale as dependências:
-   ```bash
-   npm install
-   ```
+### 1. Iniciar o Backend
+```bash
+cd backend
+npm install
+node server.js
+# API rodando em http://localhost:3000
+```
 
-2. Inicie o servidor:
-   ```bash
-   node server.js
-   ```
-
-3. Acesse a interface web no navegador:
-   ```text
-   http://localhost:3000
-   ```
+### 2. Iniciar o Frontend
+Em outro terminal:
+```bash
+cd frontend
+# Utilizando a extensão Live Server do VS Code ou:
+npx serve .
+```
+Abra o endereço informado pelo servidor estático no navegador.
