@@ -1,23 +1,26 @@
-# 📋 Gerenciador de Tarefas — Etapa 1 (CLI Terminal)
+# 🌐 Gerenciador de Tarefas — Etapa 2 (Monolito Integrado)
 
-Primeira etapa do projeto de estudo em JavaScript, focada nos fundamentos da linguagem, estruturas de dados em memória e interação síncrona no terminal via CLI.
+Segunda etapa do projeto, evoluindo a aplicação de terminal para uma arquitetura cliente-servidor integrada com Node.js, Express e HTML nativo.
 
 ---
 
 ## 🎯 Objetivos de Aprendizagem
-- Manipulação de arrays e métodos nativos (`find`, `push`).
-- Estruturação de objetos literais.
-- Funções com responsabilidade única e reaproveitamento de código.
-- Tratamento de exceções com `throw new Error()` e `try/catch`.
-- Entrada de dados no terminal com `prompt-sync`.
+- Criação de servidores HTTP com **Express**.
+- Implementação de endpoints REST (`GET`, `POST`, `PATCH`).
+- Servir arquivos estáticos da pasta `public/` via `express.static`.
+- Consumo assíncrono de APIs no frontend utilizando `fetch()` (Promises / `async/await`).
+- Manipulação dinâmica do DOM e formulários HTML nativos (sem estilos/UI complexa).
 
 ---
 
-## 🛠️ Regras de Negócio
-- **Título:** Obrigatório e com no mínimo 5 caracteres.
-- **Prioridade:** Valor numérico de 1 (Alta) a 3 (Baixa).
-- **Código:** Gerador sequencial numérico iniciado em 0.
-- **Status:** Booleano (`true` para em execução / `false` para concluída).
+## 📡 Endpoints da API
+
+| Método | Rota | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/tarefas` | Retorna todas as tarefas |
+| `POST` | `/api/tarefas` | Cria uma nova tarefa |
+| `PATCH` | `/api/tarefas/:codigo/concluir` | Marca uma tarefa como concluída |
+| `PATCH` | `/api/tarefas/:codigo/prioridade` | Atualiza o nível de prioridade |
 
 ---
 
@@ -28,7 +31,12 @@ Primeira etapa do projeto de estudo em JavaScript, focada nos fundamentos da lin
    npm install
    ```
 
-2. Execute a aplicação:
+2. Inicie o servidor:
    ```bash
-   node app.js
+   node server.js
+   ```
+
+3. Acesse a interface web no navegador:
+   ```text
+   http://localhost:3000
    ```
